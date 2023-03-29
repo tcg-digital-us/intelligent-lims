@@ -92,7 +92,7 @@ kubectl create secret docker-registry tcgdigitalus-registry-secret --docker-user
 Deploy the container to Kubernetes on mcube VM's:
 
 ```
-sudo kubectl apply –f k8s-deploy.yml
+sudo kubectl apply -f k8s-deploy.yml
 ```
 
 ### Openresty
@@ -145,5 +145,5 @@ sudo kubectl exec $(sudo kubectl get pods --all-namespaces | awk '/^default\s+op
 ## Test Deployment
 
 ```
-sudo curl $(sudo kubectl get service $(sudo kubectl get services -l app=intelligent-lims -o jsonpath='{.items[0].metadata.name}') -o jsonpath='{.spec.clusterIP}:{.spec.ports[0].port}')/releaseScore
+sudo curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }'  $(sudo kubectl get service $(sudo kubectl get services -l app=intelligent-lims -o jsonpath='{.items[0].metadata.name}') -o jsonpath='{.spec.clusterIP}:{.spec.ports[0].port}')/releaseScore
 ```
