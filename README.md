@@ -86,7 +86,7 @@ The only element that is currently required in the call is ``sdcid`` (see chart 
 Get create a secret to be able to grab private containers from dockerhub:
 
 ```
-kubectl create secret docker-registry tcgdigitalus-registry-secret --docker-username=tcgdigitalus --docker-password=z628Kkh#qmTE --docker-email=don.koch@tcgdigital.com -n default
+kubectl create secret docker-registry tcgdigitalus-registry-secret --docker-username=<username> --docker-password=<password> --docker-email=<email> -n default
 ```
 
 Deploy the container to Kubernetes on mcube VM's:
