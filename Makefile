@@ -37,4 +37,8 @@ up:
 down:
 	@docker compose down
 
+apply:
+	@sudo kubectl apply -f k8s-deploy.yml
 
+delete:
+	@kubectl delete -f k8s-deploy.yml
