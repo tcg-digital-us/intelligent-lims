@@ -95,9 +95,17 @@ Deploy the container to Kubernetes on mcube VM's:
 sudo kubectl apply –f k8s-deploy.yml
 ```
 
-### Openresty 
+### Openresty
 
-Add a location config for the service in openresty deployed with mcube:
+```
+sudo kubectl exec -it $(sudo kubectl get pods --all-namespaces | awk '/^default\s+openresty-/ {print $2}') -- /bin/sh 
+```
+
+```
+cd /usr/local/openresty/nginx/conf/
+```
+
+Create a new nginx config in ``genie/intelligent-lims.yml``. Use ``vi`` to add a location config for the service in openresty deployed with mcube:
 
 ```
 location /releaseScore {
@@ -120,4 +128,22 @@ location /releaseScore {
 	client_body_buffer_size 32K;
 	client_max_body_size 300M;
 }
+```
+
+Update the mcube openresty configuration:
+
+```
+./update_config
+```
+
+Reload openresty:
+
+```
+sudo kubectl exec $(sudo kubectl get pods --all-namespaces | awk '/^default\s+openresty-/ {print $2}') -- /usr/local/openresty/bin/openresty -s reload
+```
+
+## Test Deployment
+
+```
+sudo curl $(sudo kubectl get service $(sudo kubectl get services -l app=intelligent-lims -o jsonpath='{.items[0].metadata.name}') -o jsonpath='{.spec.clusterIP}:{.spec.ports[0].port}')/releaseScore
 ```
