@@ -4,6 +4,6 @@ from Release import ReleaseHandler
 import random
 
 class SampleHandler(ReleaseHandler):
-	def handle(self, data):
+	def caculateReleaseScore(self, data):
 		score = random.random()
 		return score

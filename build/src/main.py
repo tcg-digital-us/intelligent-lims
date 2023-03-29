@@ -10,7 +10,7 @@ def handle_type():
 		data = request.json
 		type = data.get('sdcid')
 		handler = handler_factory.get_handler(type)
-		result = handler.handle(data)
+		result = handler.calculateReleaseScore(data)
 		return jsonify({"data": data, "releaseScore": result})
 	except ValueError as e:
 		return jsonify({"error": str(e)}), 400

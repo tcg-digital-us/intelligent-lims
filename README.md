@@ -1,40 +1,66 @@
 # Test REST service for the Intelligent LIMS hackathon
 
-The mcube REST service will return a random number between 0-1.
+The mcube REST service that will return a random number between 0-1.
 
-## Running this example
+## About
 
-1. In one shell
+This rest service acquires the releaseScore for the following SDC's via POST request:
 
-    ```sh
-    cd ~/batch
-    source ./env/bin/activate
-    python ./batch_release.py
-    ```
+|SDC|sdc\_id|
+|---|--------|
+|Batch|"Batch"|
+|Batch Stage|"BatchStage"|
+|Sample|"Sample"|
+|Monitor Group|"MonitorGroup"|
 
-1. In another shell
+The sdc\_id is a required parameter in the POST request. Any other relevant data can be included in the post request and it will be available in the relevant handlers.
 
-    ```sh
-    cd ~/batch
-    ./test.sh
-    ```
+## Prerequisites
 
-## Intallation
+This solution requires:
 
-To setup the environment for this example:
+- python v3
+- make
+- docker
 
-```sh
-cd batch
-python3 -m venv env
-source ./env/bin/activate
-pip install -r requirements.txt
+## Develop
+
+### Local Run
+
+```
+make run-dev
 ```
 
-## Redeploy docker
+### Build
 
-```sh
-docker-compose down
-docker buildx build -t tcgdigitalus/batch-release:latest --file Dockerfile .
-docker-compose up -d
 ```
+make build
+```
+
+## Deploy
+
+### Run
+
+```
+make up
+```
+
+### Stop
+
+```
+make down
+```
+
+## Test
+
+Powershell
+```
+Invoke-WebRequest -Uri "http://3.214.69.84:5002/releaseScore" -Method POST -ContentType "application/json" -Body '{"sdcid": <sdc_id>, ... }'
+```
+
+Bash
+```
+curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }' "http://3.214.69.84:5002/releaseScore"
+```
+
 
