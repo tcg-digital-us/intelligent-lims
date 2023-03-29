@@ -13,4 +13,4 @@ sys.path.insert(0, site_packages)
 # import some_package
 
 # Run your main script
-subprocess.run([python_cmd, "build/src/main.py"])
+subprocess.run([python_cmd, 'build/src/main.py'])

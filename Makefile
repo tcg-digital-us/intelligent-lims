@@ -13,24 +13,28 @@ ifeq ($(PYTHON_COMMAND),null)
 endif
 
 clean:
-	$(PYTHON_COMMAND) ./scripts/clean.py
+	@$(PYTHON_COMMAND) ./scripts/clean.py
+	@echo Cleaned project.
 
 init:
-	$(PYTHON_COMMAND) ./scripts/init_venv.py
+	@echo Initializing virtual environment...
+	@$(PYTHON_COMMAND) ./scripts/init_venv.py
+	@echo Initialization complete.
 
 run_dev: clean
-	$(PYTHON_COMMAND) ./scripts/run_dev.py
+	@echo Running project locally...
+	@$(PYTHON_COMMAND) ./scripts/run_dev.py
 
 build: clean
-	docker buildx build -t $(DOCKERHUB)/$(IMAGE):$(VERSION) --file Dockerfile .
+	@docker buildx build -t $(DOCKERHUB)/$(IMAGE):$(VERSION) --file Dockerfile .
 
 upload: build 
-	docker login && docker push $(DOCKERHUB)/$(IMAGE):$(VERSION)
+	@docker login && docker push $(DOCKERHUB)/$(IMAGE):$(VERSION)
 
 up:
-	docker compose up --remove-orphans -d
+	@docker compose up --remove-orphans -d
 
 down:
-	docker compose down
+	@docker compose down
 
 
