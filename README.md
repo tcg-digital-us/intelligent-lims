@@ -25,10 +25,18 @@ This solution requires:
 
 ## Develop
 
-### Local Run
+### Run Locally
+
+First a python3 virtual environment will be created and the ``build/requirements.txt`` prerequisites will be installed. After that the app should run normally. Upon exiting the local run with a sigterm or equivalent, the virtual environment should be automatically deactivated as well.
 
 ```
 make run-dev
+```
+
+### Clean
+
+```
+make clean
 ```
 
 ### Build
@@ -53,14 +61,16 @@ make down
 
 ## Test
 
-Powershell
-```
-Invoke-WebRequest -Uri "http://3.214.69.84:5002/releaseScore" -Method POST -ContentType "application/json" -Body '{"sdcid": <sdc_id>, ... }'
-```
+The only element that is currently required in the call is ``sdcid`` (see chart above for appropriate scdid values). All other data will be provided to the api handlers as well.
 
-Bash
-```
-curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }' "http://3.214.69.84:5002/releaseScore"
-```
+- Powershell
+  ```
+  Invoke-WebRequest -Uri "http://3.214.69.84:5002/releaseScore" -Method POST -ContentType "application/json" -Body '{"sdcid": <sdc_id>, ... }'
+  ```
+
+- Bash
+  ```
+  curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }' "http://3.214.69.84:5002/releaseScore"
+  ```
 
 
