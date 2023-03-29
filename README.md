@@ -59,6 +59,12 @@ make up
 make down
 ```
 
+### Upload Built Image
+
+```
+make upload
+```
+
 ## Test
 
 The only element that is currently required in the call is ``sdcid`` (see chart above for appropriate scdid values). All other data will be provided to the api handlers as well.
@@ -73,4 +79,45 @@ The only element that is currently required in the call is ``sdcid`` (see chart 
   curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }' "http://3.214.69.84:5002/releaseScore"
   ```
 
+## Mcube Genie Install
 
+### Kubernetes
+
+Get create a secret to be able to grab private containers from dockerhub:
+
+```
+kubectl create secret docker-registry tcgdigitalus-registry-secret --docker-username=tcgdigitalus --docker-password=z628Kkh#qmTE --docker-email=don.koch@tcgdigital.com -n default
+```
+
+Deploy the container to Kubernetes on mcube VM's:
+
+```
+sudo kubectl apply –f k8s-deploy.yml
+```
+
+### Openresty 
+
+Add a location config for the service in openresty deployed with mcube:
+
+```
+location /releaseScore {
+
+#	access_by_lua '
+#		local chk = require "licenseCheckService"
+#		chk.check();
+#	';
+
+	proxy_pass http://3.214.69.84:5002/releaseScore;
+	proxy_set_header Host $host;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_next_upstream error timeout invalid_header http_500 http_502
+	http_503 http_504;
+	proxy_redirect off;
+	proxy_buffering off;
+	proxy_set_header Host $http_host;
+	client_body_in_file_only clean;
+	client_body_buffer_size 32K;
+	client_max_body_size 300M;
+}
+```
