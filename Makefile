@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: run-dev build up down clean
+.PHONY: init run-dev build up down upload clean
 
 DOCKERHUB = tcgdigitalus
 IMAGE = intelligent-lims
