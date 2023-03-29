@@ -144,6 +144,8 @@ sudo kubectl exec $(sudo kubectl get pods --all-namespaces | awk '/^default\s+op
 
 ## Test Deployment
 
+This is to test that the kubernetes deployment is running. This command should be run from a VM that is part of the mcube installation and has access to the ``kubectl``:
+
 ```
 sudo curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }'  $(sudo kubectl get service $(sudo kubectl get services -l app=intelligent-lims -o jsonpath='{.items[0].metadata.name}') -o jsonpath='{.spec.clusterIP}:{.spec.ports[0].port}')/releaseScore
 ```
