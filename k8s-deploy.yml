@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: intelligent-lims-svc-clstr
+  labels:
+    app: intelligent-lims
+spec:
+  type: ClusterIP
+  selector:
+    app: intelligent-lims
+  ports:
+    - name: "http"
+      port: 5002
+      appProtocol: tcp
+      targetPort: 5002
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intelligent-lims
+  namespace: default
+  annotations:
+    "sidecar.jaegertracing.io/inject": "false"
+spec:
+  selector:
+    matchLabels:
+      app: intelligent-lims
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: intelligent-lims
+    spec:
+      imagePullSecrets:
+        - name: tcgdigitalus-registry-secret
+      containers:
+        - image:  tcgdigitalus/intelligent-lims:latest
+          name: intelligent-lims
+          ports:
+          - containerPort: 5002
+          imagePullPolicy: Always
+      restartPolicy: Always
