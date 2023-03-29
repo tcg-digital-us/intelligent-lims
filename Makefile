@@ -1,19 +1,31 @@
 SHELL := /bin/bash
 
-.PHONY: init run-dev build up down upload clean
+.PHONY: run-dev build up down upload clean
 
 DOCKERHUB = tcgdigitalus
 IMAGE = intelligent-lims
 VERSION = latest
 
-init: clean
-	python3 -m venv build/py_env
+PYTHON_COMMAND = $(shell python ./scripts/get_py.py)
 
-run-dev: clean init
-	source ./build/py_env/bin/activate && pip3 install -r ./build/requirements.txt && python3 ./build/src/main.py; deactivate
+ifeq ($(PYTHON_COMMAND),null)
+	$(error Python 3 not found. Please install Python 3 and try again.)
+endif
 
-build: clean init
+clean:
+	$(PYTHON_COMMAND) ./scripts/clean.py
+
+init:
+	$(PYTHON_COMMAND) ./scripts/init_venv.py
+
+run_dev: clean
+	$(PYTHON_COMMAND) ./scripts/run_dev.py
+
+build: clean
 	docker buildx build -t $(DOCKERHUB)/$(IMAGE):$(VERSION) --file Dockerfile .
+
+upload: build 
+	docker login && docker push $(DOCKERHUB)/$(IMAGE):$(VERSION)
 
 up:
 	docker compose up --remove-orphans -d
@@ -21,8 +33,4 @@ up:
 down:
 	docker compose down
 
-upload: build 
-	docker login && docker push $(DOCKERHUB)/$(IMAGE):$(VERSION)
 
-clean:
-	rm -rf build/py_env
