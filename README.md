@@ -105,7 +105,7 @@ sudo kubectl exec -it $(sudo kubectl get pods --all-namespaces | awk '/^default\
 cd /usr/local/openresty/nginx/conf/
 ```
 
-Create a new nginx config in ``genie/intelligent-lims.yml``. Use ``vi`` to add a location config for the service in openresty deployed with mcube:
+Create a new nginx config in ``genie/intelligent-lims.conf``. Use ``vi`` to add a location config for the service in openresty deployed with mcube:
 
 ```
 location /releaseScore {
