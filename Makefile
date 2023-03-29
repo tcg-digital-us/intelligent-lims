@@ -21,7 +21,7 @@ up:
 down:
 	docker compose down
 
-upload: 
+upload: build 
 	docker login && docker push $(DOCKERHUB)/$(IMAGE):$(VERSION)
 
 clean:
