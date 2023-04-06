@@ -1,0 +1,11 @@
+
+# The url for the app to be served under
+
+app_host = "0.0.0.0:5004"
+
+# A list of available base URLs to be used throughout the application. 
+# In development, url's can change all the time, so it is made easy here to 
+# modify them, and they are used throughout the application.
+
+[base_urls]
+labvantage = "http://192.168.1.219:5003"

@@ -28,3 +28,7 @@ $(Invoke-WebRequest -Method Post -ContentType "application/json" -Body '{"lims":
 ```
 $(Invoke-WebRequest -Method Post -ContentType "application/json" -Body '{"lims": "labvantage", "action": "getScore", "shouldReport": true, "content": {"sdcid": "Batch", "labels": ["sdclabel184", "sdclabel284", "sdclabel281"], "data": [[44, 28, 1838, 4082], [10, 221, 213, 22], [249, 2928, 82, 18171]]}}' -Uri http://localhost:5001/intelligent-lims -UseBasicParsing).Content
 ```
+
+```
+$(Invoke-WebRequest -Method Post -ContentType "application/json" -Body '{"lims": "labvantage", "action": "lookupTransaction", "shouldReport": true, "content": {"transaction_id": "ab90a2af-b948-4725-9422-fca237f2f30d"}}' -Uri http://localhost:5001/intelligent-lims -UseBasicParsing).Content
+```
