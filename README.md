@@ -1,151 +1,30 @@
-# Test REST service for the Intelligent LIMS hackathon
+# intelligent-lims microservice
 
-The mcube REST service that will return a random number between 0-1.
+The purpose of this microservice is to handle the 'lims' attribute accordingly,
+forwarding the package to the lv-handler for further evalutation.
 
-## About
+## LIMS
 
-This rest service acquires the releaseScore for the following SDC's via POST request:
-
-|SDC|sdc\_id|
-|---|--------|
-|Batch|"Batch"|
-|Batch Stage|"BatchStage"|
-|Sample|"Sample"|
-|Monitor Group|"MonitorGroup"|
-
-The sdc\_id is a required parameter in the POST request. Any other relevant data can be included in the post request and it will be available in the relevant handlers.
-
-## Prerequisites
-
-This solution requires:
-
-- python v3
-- make
-- docker
-
-## Develop
-
-### Run Locally
-
-First a python3 virtual environment will be created and the ``build/requirements.txt`` prerequisites will be installed. After that the app should run normally. Upon exiting the local run with a sigterm or equivalent, the virtual environment should be automatically deactivated as well.
+To modify/add mappings for LIMS, enter the container and modify:
 
 ```
-make run-dev
-```
-
-### Clean
-
-```
-make clean
-```
-
-### Build
-
-```
-make build
-```
-
-## Deploy
-
-### Run
-
-```
-make up
-```
-
-### Stop
-
-```
-make down
-```
-
-### Upload Built Image
-
-```
-make upload
-```
-
-## Test
-
-The only element that is currently required in the call is ``sdcid`` (see chart above for appropriate scdid values). All other data will be provided to the api handlers as well.
-
-- Powershell
-  ```
-  Invoke-WebRequest -Uri "http://3.214.69.84:5002/releaseScore" -Method POST -ContentType "application/json" -Body '{"sdcid": <sdc_id>, ... }'
-  ```
-
-- Bash
-  ```
-  curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }' "http://3.214.69.84:5002/releaseScore"
-  ```
-
-## Mcube Genie Install
-
-### Kubernetes
-
-Get create a secret to be able to grab private containers from dockerhub:
-
-```
-kubectl create secret docker-registry tcgdigitalus-registry-secret --docker-username=<username> --docker-password=<password> --docker-email=<email> -n default
-```
-
-Deploy the container to Kubernetes on mcube VM's:
-
-```
-sudo kubectl apply -f k8s-deploy.yml
-```
-
-### Openresty
-
-```
-sudo kubectl exec -it $(sudo kubectl get pods --all-namespaces | awk '/^default\s+openresty-/ {print $2}') -- /bin/sh 
-```
-
-```
-cd /usr/local/openresty/nginx/conf/
-```
-
-Create a new nginx config in ``genie/intelligent-lims.conf``. Use ``vi`` to add a location config for the service in openresty deployed with mcube:
-
-```
-location /releaseScore {
-
-#	access_by_lua '
-#		local chk = require "licenseCheckService"
-#		chk.check();
-#	';
-
-	proxy_pass http://3.214.69.84:5002/releaseScore;
-	proxy_set_header Host $host;
-	proxy_set_header X-Real-IP $remote_addr;
-	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_next_upstream error timeout invalid_header http_500 http_502
-	http_503 http_504;
-	proxy_redirect off;
-	proxy_buffering off;
-	proxy_set_header Host $http_host;
-	client_body_in_file_only clean;
-	client_body_buffer_size 32K;
-	client_max_body_size 300M;
+# LIMS to URL mapping
+lims_to_url = {
+    "labvantage": "https://some-kubernetes-cluster-service/lv-handler",
 }
 ```
 
-Update the mcube openresty configuration:
+## Payload
+```
+{
+	"lims": "labvantage",
+	...
+}
 
 ```
-./update_config
+$(Invoke-WebRequest -Method Post -ContentType "application/json" -Body '{"lims": "labvantage", "action": "lookupTransaction", "shouldReport": true, "content": {"transaction_id": "9a33ac88-2f97-4872-a6cc-2dbf9c28e2d5"}}' -Uri http://localhost:5001/intelligent-lims -UseBasicParsing).Content
 ```
 
-Reload openresty:
-
 ```
-sudo kubectl exec $(sudo kubectl get pods --all-namespaces | awk '/^default\s+openresty-/ {print $2}') -- /usr/local/openresty/bin/openresty -s reload
-```
-
-## Test Deployment
-
-This is to test that the kubernetes deployment is running. This command should be run from a VM that is part of the mcube installation and has access to the ``kubectl``:
-
-```
-sudo curl -X POST -H "Content-Type: application/json" -d '{"sdcid": <sdc_id>, ... }'  $(sudo kubectl get service $(sudo kubectl get services -l app=intelligent-lims -o jsonpath='{.items[0].metadata.name}') -o jsonpath='{.spec.clusterIP}:{.spec.ports[0].port}')/releaseScore
+$(Invoke-WebRequest -Method Post -ContentType "application/json" -Body '{"lims": "labvantage", "action": "getScore", "shouldReport": true, "content": {"sdcid": "Batch", "labels": ["sdclabel184", "sdclabel284", "sdclabel281"], "data": [[44, 28, 1838, 4082], [10, 221, 213, 22], [249, 2928, 82, 18171]]}}' -Uri http://localhost:5001/intelligent-lims -UseBasicParsing).Content
 ```

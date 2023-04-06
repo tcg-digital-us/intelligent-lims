@@ -1,0 +1,5 @@
+{
+    "lims_to_url": {
+        "labvantage": "http://labvantage-api-svc-clstr:5002"
+    }
+}

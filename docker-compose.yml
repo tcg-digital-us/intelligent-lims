@@ -5,4 +5,5 @@ services:
     image: tcgdigitalus/intelligent-lims:latest
     ports:
       - "5002:5002"
-
+    volumes:
+      - /path/to/your/config.json:/build/config.json
