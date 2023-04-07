@@ -1,38 +1,87 @@
-import os, toml, re
+# file: config.py
+# author: Anthony Mesa
 
-class ConfigNotFoundError(Exception):
+import os, toml, re
+from pydantic import BaseModel, ValidationError
+from typing import Tuple
+
+class ConfigLoadError(Exception):
     pass
 
-def _load_config():
-    try:
-        main_file_path = os.path.abspath(os.path.dirname(__file__))
-        config_file_path = os.path.join(main_file_path, 'config.toml')
-        with open(config_file_path) as f:
-            config = toml.load(f)
-        return config
-    except Exception as e:
-        print(f"Error loading config: {e}")
-        return {}
-    
-def base_urls():
-    config = _load_config()
-    base_urls = config.get('base_urls', None)
-    if base_urls is None:
-        raise ConfigNotFoundError("base_urls could not be found in config")
-    return base_urls
+class Config(BaseModel):
+    app_host: str
+    base_urls: dict
 
-def app_host():
-    config = _load_config()
-    app_host = config.get('app_host')
+def _load_config() -> Config:
+    """Load config.toml and make it available
+
+    Returns:
+        Config: The configuration object.
+
+    Raises:
+        ConfigLoadError
+    """
+
+    main_file_path = os.path.abspath(os.path.dirname(__file__))
+    config_file_path = os.path.join(main_file_path, 'config.toml')
+
+    try:
+        with open(config_file_path, "r") as f:
+            toml_data = toml.load(f)
+    except FileNotFoundError as e:
+        raise ConfigLoadError(f"Error loading config file: {e}")
+
+    try:
+        config = Config(**toml_data)
+    except ValidationError as e:
+        raise ConfigLoadError(f"Error decoding TOML data from config: {e}")
+
+    return config
+
+class ConfigGetError(Exception):
+    pass
+
+def base_urls() -> dict:
+    """Get the list of base urls from the config
+
+    Returns:
+        dict: base url id's mapped to their actual urls
+
+    Raises:
+        ConfigGetError
+    """
+
+    try:
+        config = _load_config()
+    except ConfigLoadError as e:
+        raise ConfigGetError(f"Could not get base_urls from config: {e}")
+    
+    return config.base_urls
+
+def app_host() -> Tuple[str, str]:
+    """Get the app host ip address and port from the config
+
+    Returns:
+        str: The ip address.
+        str: The port.
+
+    Raises:
+        ConfigGetError
+    """
+
+    try:
+        config = _load_config()
+    except ConfigLoadError as e:
+        raise ConfigGetError(f"Could not get app_host from config: {e}")
 
     # Regular expression pattern to match an IPv4 address followed by a colon and a port number
     pattern = r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+)"
 
-    match = re.match(pattern, app_host)
+    match = re.match(pattern, config.app_host)
 
     if match:
         ip, port = match.groups()
         return ip, port
     else:
-        raise ConfigNotFoundError("app_host could not be found in config")
+        raise ConfigGetError(f"app_host in config is malformed: {e}")
 

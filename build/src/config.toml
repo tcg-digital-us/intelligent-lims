@@ -8,4 +8,4 @@ app_host = "0.0.0.0:5004"
 # modify them, and they are used throughout the application.
 
 [base_urls]
-labvantage = "http://192.168.1.219:5003"
+labvantage = "http://localhost:5003"
