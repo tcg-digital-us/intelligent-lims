@@ -25,10 +25,10 @@ run_dev: clean
 	@echo Running project locally...
 	@$(PYTHON_COMMAND) ./scripts/run_dev.py
 
-build: clean
+dockerimage: clean
 	@docker buildx build -t $(DOCKERHUB)/$(IMAGE):$(VERSION) --file Dockerfile .
 
-upload: build 
+upload: dockerimage 
 	@docker login && docker push $(DOCKERHUB)/$(IMAGE):$(VERSION)
 
 up:
