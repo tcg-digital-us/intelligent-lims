@@ -1,4 +1,6 @@
 flask
+flask_sqlalchemy
 requests
 toml
+jsonschema
 pydantic
