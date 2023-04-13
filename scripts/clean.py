@@ -1,9 +1,16 @@
-import os, shutil
+import os
+import shutil
 from init_venv import venv_path
 
-src_cache_path = "build/src/__pycache__"
-scripts_cache_path = "scripts/__pycache__"
+relative_paths_to_remove = [
+    "../env",
+    "./__pycache__",
+	"../src/__pycache__"
+]
 
-shutil.rmtree(venv_path) if os.path.exists(venv_path) else None
-shutil.rmtree(src_cache_path) if os.path.exists(src_cache_path) else None
-shutil.rmtree(scripts_cache_path) if os.path.exists(scripts_cache_path) else None
+this_file_path = os.path.abspath(os.path.dirname(__file__))
+for rel_path in relative_paths_to_remove:
+    abs_path = os.path.join(this_file_path, rel_path)
+    abs_path = os.path.abspath(abs_path)
+    if os.path.exists(abs_path):
+        shutil.rmtree(abs_path)

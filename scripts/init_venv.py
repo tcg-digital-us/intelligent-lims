@@ -2,7 +2,8 @@ import sys
 import os
 import venv
 
-venv_path = os.path.join("build", "env")
+this_file_path = os.path.abspath(os.path.dirname(__file__))
+venv_path = os.path.join(this_file_path, "..", "env")
 
 # Determine the right paths and commands based on the platform
 if sys.platform == "win32":
